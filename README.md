@@ -2,18 +2,18 @@
 
 Below is a list of resources for working on this project:
 
-#### Upcoming Due Dates:
+### Upcoming Due Dates:
 
-[ ] **Project Management Plan - Due 09/12/25 11:59PM**
+1. **Project Management Plan - Due 09/12/25 11:59PM**
  - Status: In progress, will meet Monday 09/05 at 10:00PM to discuss changes
 
-#### Google Docs Links
+### Google Docs Links
 
 You must request access to view these documents
 
 1. [Project Management Plan](https://docs.google.com/document/d/1FfJ6ZJQwvdmUM3KI6IC-4oyhLll8w04LknVZpzxnneo/edit?usp=sharing)
 
-#### Configuration Management Guidelines
+### Configuration Management Guidelines
 
 Pursuant to the class's document on [using CM tools](https://course.techconf.org/se4485/Template/CM-Tool.pdf), we must document our changes when writing code or supplemental documents.
 
