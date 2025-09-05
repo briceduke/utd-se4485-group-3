@@ -4,7 +4,7 @@ Below is a list of resources for working on this project:
 
 ### Upcoming Due Dates:
 
-1. **Project Management Plan - Due 09/12/25 11:59PM**
+**Project Management Plan - Due 09/12/25 11:59PM**
  - Status: In progress, will meet Monday 09/05 at 10:00PM to discuss changes
 
 ### Google Docs Links
