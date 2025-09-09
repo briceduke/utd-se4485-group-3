@@ -5,7 +5,7 @@ Below is a list of resources for working on this project:
 ### Upcoming Due Dates:
 
 **Project Management Plan - Due 09/12/25 11:59PM**
- - Status: In progress, will meet Monday 09/08 at 10:00PM to discuss changes
+ - Status: In progress, members must complete parts by 9/9/25 at 11:59PM, will submit on 9/10.
 
 ### Google Docs Links
 
