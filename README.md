@@ -23,7 +23,7 @@ Pursuant to the class's document on [using CM tools](https://course.techconf.org
 2. add a comment to your changes noting what has changed
 3. get two other members to reply to your comments with a review
 
-![google docs version history location](<img width="2557" height="176" alt="image" src="https://github.com/user-attachments/assets/a6140abb-7027-4c19-b8da-c24f46b2032c" />)
+![google docs version history location](https://github.com/user-attachments/assets/a6140abb-7027-4c19-b8da-c24f46b2032c)
 
 When pushing major changes of the docs to GitHub:
 
