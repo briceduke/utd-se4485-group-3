@@ -23,7 +23,7 @@ Pursuant to the class's document on [using CM tools](https://course.techconf.org
 2. add a comment to your changes noting what has changed
 3. get two other members to reply to your comments with a review
 
-![google docs version history location](https://media.discordapp.net/attachments/1409648634995277977/1413598344139505747/Screenshot_2025-09-05_135409.png?ex=68bc838c&is=68bb320c&hm=61aee35dc5a3ee309d0a7c8a2b8e1134b363526b5c6115c4070a63e05d4a24b2&=&format=webp&quality=lossless&width=1851&height=128)
+![google docs version history location](<img width="2557" height="176" alt="image" src="https://github.com/user-attachments/assets/a6140abb-7027-4c19-b8da-c24f46b2032c" />)
 
 When pushing major changes of the docs to GitHub:
 
