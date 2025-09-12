@@ -5,7 +5,7 @@ Below is a list of resources for working on this project:
 ### Upcoming Due Dates:
 
 **Project Management Plan - Due 09/12/25 11:59PM**
- - Status: In progress, members must complete parts by 9/9/25 at 11:59PM, will submit on 9/10.
+ - Status: Pending review, will submit at ~2PM CDT after approval from sponsor.
 
 ### Google Docs Links
 
