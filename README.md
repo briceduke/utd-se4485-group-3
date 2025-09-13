@@ -5,7 +5,10 @@ Below is a list of resources for working on this project:
 ### Upcoming Due Dates:
 
 **Project Management Plan - Due 09/12/25 11:59PM**
- - Status: Pending review, will submit at ~2PM CDT after approval from sponsor.
+ - Status: Reviewed by sponsor and submitted.
+
+**Requirements Documentation - Due 09/26/25 11:59PM**
+ - Status: Not started.
 
 ### Google Docs Links
 
