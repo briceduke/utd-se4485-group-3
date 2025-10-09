@@ -8,7 +8,7 @@ Below is a list of resources for working on this project:
  - Status: Reviewed by sponsor and submitted.
 
 **Requirements Documentation - Due 09/26/25 11:59PM**
- - Status: Pending sponsor review.
+ - Status: Reviewed by sponsor and submitted.
 
 ### Google Docs Links
 
@@ -16,6 +16,7 @@ You must request access to view these documents
 
 1. [Project Management Plan](https://docs.google.com/document/d/1FfJ6ZJQwvdmUM3KI6IC-4oyhLll8w04LknVZpzxnneo/edit?usp=sharing)
 2. [Requirements Documentation](https://docs.google.com/document/d/1K-C-Qxv-ak3iMfZVtWAqiY6MwcaQ7BcablQzacZmCMs/edit?usp=sharing)
+3. [Architecture Documentation](https://docs.google.com/document/d/11jxPOv6BJXbTQbjQYScvk9rQOuxu6_rMCpXJJGDyp3c/edit?usp=sharing)
 
 ### Configuration Management Guidelines
 
