@@ -1,0 +1,15 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "everfox-deployer"
+version = "0.1.0"
+description = "VSCode Extensions utility"
+requires-python = ">=3.12"
+
+[project.scripts]
+everfox-deployer = "src.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]

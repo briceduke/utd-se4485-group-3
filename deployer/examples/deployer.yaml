@@ -1,0 +1,44 @@
+# Plan configuration
+plan:
+  # Replace mode: none (do not replace existing extensions),
+  # prune (replace existing extensions that are not the same version),
+  # nuke (replace all existing extensions)
+  replace_mode: none
+  # Backup directory
+  backup_dir: "./backup"
+  # Temporary directory
+  temp_dir: "./temp"
+  # Extensions from the archive to include
+  include_extensions:
+    - name: "ms-python.python"
+      version: latest
+  # Extensions from the archive to exclude
+  exclude_extensions:
+    - name: "ms-vscode.vscode-json"
+      version: latest
+
+# Source configuration
+source:
+  # URL to fetch the extensions archive
+  archive_url: "https://example.com/vscode-extensions.zip"
+  # Number of retries
+  retries: 3
+
+# Deployment configuration
+deployment:
+  # Target VSCode extensions directory
+  target_dir: "C:/Users/Username/.vscode/extensions"
+  # Whether to verify extension integrity after deployment
+  # error (fail if integrity is not correct),
+  # none (do not verify),
+  # warn (warn if integrity is not correct)
+  verify_integrity: error
+  # Whether to perform a dry run
+  dry_run: false
+
+# Logging configuration
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR
+  level: INFO
+  # Log file path (optional)
+  file: "./deployer.log"
