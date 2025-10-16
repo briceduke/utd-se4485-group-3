@@ -1,0 +1,29 @@
+# List of extensions to download
+extensions:
+  - name: "ms-python.python"
+    version: latest
+  - name: "ms-vscode.vscode-json"
+    version: latest
+  - name: "redhat.vscode-yaml"
+    version: latest
+
+# Output configuration
+output:
+  # Directory where extensions will be downloaded
+  directory: "./downloads"
+  # Name of the output ZIP file
+  name_template: "everfox-extensions-{{date}}.zip"
+
+# Download configuration
+download:
+  # Number of retries
+  retries: 3
+  # Whether to skip failed downloads
+  skip_failed: true
+
+# Logging configuration
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR
+  level: INFO
+  # Log file path (optional)
+  file: "./downloader.log"
