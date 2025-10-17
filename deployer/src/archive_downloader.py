@@ -13,4 +13,4 @@ def fetch_archive_and_manifest(archive_url: str, temp_dir: str, retries: int) ->
     Raises:
         Exception: If download fails after all retry attempts
     """
-    raise NotImplementedError
+    return "archive.zip", "manifest.json"

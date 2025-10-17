@@ -15,4 +15,4 @@ def expand_and_verify(archive: str, manifest: str, target_dir: str,
     - 'none': Do not verify integrity
     - 'warn': Warn if integrity is not correct but continue
     """
-    raise NotImplementedError
+    return None

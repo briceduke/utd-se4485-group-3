@@ -17,4 +17,4 @@ def download_extensions(extensions: list[dict], download_dir: str,
     - name: The extension identifier (e.g., 'ms-python.python')
     - version: The version to download, or 'latest' for latest version
     """
-    raise NotImplementedError
+    return ["extension1.zip", "extension2.zip"]

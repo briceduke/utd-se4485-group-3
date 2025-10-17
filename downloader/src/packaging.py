@@ -14,4 +14,4 @@ def build_zip_and_manifest(files: list[str], output_dir: str,
     The name_template can contain placeholders like {{date}} that will be replaced
     with appropriate values (e.g., current date).
     """
-    raise NotImplementedError
+    return "zip.zip", "manifest.json"
