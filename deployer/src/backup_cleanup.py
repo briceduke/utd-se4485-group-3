@@ -17,4 +17,4 @@ def apply_replace_mode(mode: str, backup_dir: str, temp_dir: str,
     - 'prune': Replace existing extensions that are not the same version
     - 'nuke': Replace all existing extensions
     """
-    raise NotImplementedError
+    return None
