@@ -1,9 +1,10 @@
 # Plan configuration
 plan:
-  # Replace mode: none (do not replace existing extensions),
-  # prune (replace existing extensions that are not the same version),
-  # nuke (replace all existing extensions)
-  replace_mode: none
+  # Replace mode:
+  # NONE (do not replace existing extensions),
+  # REPLACE (replace existing extensions that are not the same version),
+  # CLEAN (replace all existing extensions; extensions not extracted from the archive will be removed)
+  replace_mode: NONE
   # Backup directory
   backup_dir: "./backup"
   # Temporary directory
@@ -19,8 +20,9 @@ plan:
 
 # Source configuration
 source:
-  # URL to fetch the extensions archive
+  # URLs to fetch the extensions archive and manifests from
   archive_url: "https://example.com/vscode-extensions.zip"
+  manifest_url: "https://example.com/vscode-extensions.json"
   # Number of retries
   retries: 3
 
@@ -28,11 +30,11 @@ source:
 deployment:
   # Target VSCode extensions directory
   target_dir: "C:/Users/Username/.vscode/extensions"
-  # Whether to verify extension integrity after deployment
-  # error (fail if integrity is not correct),
-  # none (do not verify),
-  # warn (warn if integrity is not correct)
-  verify_integrity: error
+  # Whether to verify extension integrity after extraction
+  # NONE (do not verify)
+  # WARN (warn if integrity check fails)
+  # ERROR (fail if integrity check fails)
+  verify_integrity: ERROR
   # Whether to perform a dry run
   dry_run: false
 
