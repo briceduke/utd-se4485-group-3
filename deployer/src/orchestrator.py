@@ -1,4 +1,4 @@
-from .config_parser import parse_config, parse_cli_config
+from .config_parser import parse_config, parse_cli_config, merge_configs
 from .logger import get_logger
 from .path_guard import ensure_paths
 from .archive_downloader import fetch_archive_and_manifest
@@ -30,12 +30,7 @@ def run(config_path: str | None = None, **kwargs) -> int:
 
     cli_config = parse_cli_config(**kwargs)
 
-    config = {
-        **yaml_config,
-        **cli_config,
-    }
-
-    logger = get_logger(config.get("logging")["level"])
+    config = merge_configs(yaml_config, cli_config)
 
     ensure_paths([
         config.get("plan")["backup_dir"],
@@ -43,6 +38,8 @@ def run(config_path: str | None = None, **kwargs) -> int:
         config.get("deployment")["target_dir"],
         config.get("logging")["file"]
     ])
+
+    logger = get_logger(config.get("logging")["level"])
 
     archive_path, manifest_path = fetch_archive_and_manifest(
         config.get("source")["archive_url"],
