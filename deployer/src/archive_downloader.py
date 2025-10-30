@@ -1,15 +1,14 @@
 import os
 import time
 import requests
-from pathlib import Path
-from urllib.parse import urljoin
 
-def fetch_archive_and_manifest(archive_url: str, temp_dir: str, retries: int = 3) -> tuple[str, str]:
+def fetch_archive_and_manifest(archive_url: str, manifest_url: str, temp_dir: str, retries: int = 3) -> tuple[str, str]:
     """
     Fetch the extensions archive (.zip) and its manifest (.json) from the specified source URL.
 
     Args:
-        archive_url: Base URL where the archive and manifest are hosted (e.g., 'https://server.com/releases/')
+        archive_url: Base URL where the archive is hosted (e.g., 'https://server.com/releases/extensions.zip')
+        manifest_url: Base URL where the manifest is hosted (e.g., 'https://server.com/releases/manifest.json')
         temp_dir: Directory for storing downloaded files temporarily
         retries: Number of retry attempts for failed downloads
 
@@ -44,11 +43,7 @@ def fetch_archive_and_manifest(archive_url: str, temp_dir: str, retries: int = 3
                 else:
                     raise Exception(f"Failed to download {url} after {retries} attempts.") from e
 
-    # Construct file URLs (assuming both are in the same base directory)
-    archive_file_url = urljoin(archive_url, "extensions.zip")
-    manifest_file_url = urljoin(archive_url, "manifest.json")
-
-    _download(archive_file_url, archive_path)
-    _download(manifest_file_url, manifest_path)
+    _download(archive_url, archive_path)
+    _download(manifest_url, manifest_path)
 
     return archive_path, manifest_path
