@@ -21,6 +21,13 @@ def download_extensions(extensions: list[dict], download_dir: str,
     os.makedirs(download_dir, exist_ok=True)
     logger = logging.getLogger("Downloader")
     logger.setLevel(logging.INFO)
+    
+    if not logger.handlers:
+        handler = logging.StreamHandler()
+        handler.setLevel(logging.INFO)
+        formatter = logging.Formatter('%(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
 
     downloaded_files = []
 
@@ -41,9 +48,19 @@ def download_extensions(extensions: list[dict], download_dir: str,
 
         # Build download URL (using Open VSX API)
         if version == "latest":
-            url = f"https://open-vsx.org/api/{publisher}/{ext_name}/latest/file/{ext_name}.vsix"
+            # Get latest version from Open VSX API
+            response = requests.get(f"https://open-vsx.org/api/{publisher}/{ext_name}/latest")
+
+            if response.status_code != 200:
+                logger.error(f"Failed to get {name}'s latest version: {response.status_code}")
+                if not skip_failed:
+                    raise Exception(f"Failed to get {name}'s latest version: {response.status_code}")
+                continue
+            latest_version = response.json()["version"]
+
+            url = f"https://open-vsx.org/api/{publisher}/{ext_name}/{latest_version}/file/{name}-{latest_version}.vsix"
         else:
-            url = f"https://open-vsx.org/api/{publisher}/{ext_name}/{version}/file/{ext_name}-{version}.vsix"
+            url = f"https://open-vsx.org/api/{publisher}/{ext_name}/{version}/file/{name}-{version}.vsix"
 
         logger.info(f"Downloading {name}@{version}...")
 
