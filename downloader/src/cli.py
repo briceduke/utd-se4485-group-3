@@ -2,6 +2,21 @@ import argparse
 import os
 from . import orchestrator
 
+def _parse_bool(value: str) -> bool:
+    """
+    Parse a string value into a boolean.
+    Accepts: true, false, yes, no, 1, 0 (case-insensitive)
+    """
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        value_lower = value.lower()
+        if value_lower in ('true', 'yes', '1', 'on'):
+            return True
+        if value_lower in ('false', 'no', '0', 'off'):
+            return False
+    raise argparse.ArgumentTypeError(f"Invalid boolean value: {value}")
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         prog="everfox-downloader",
@@ -51,7 +66,7 @@ def main() -> int:
         "--retries", type=int, default=None,
         help="Sets the number of times a failed extension download should be retried before skipping it.")
     parser.add_argument(
-        "--skip-failed", type=bool, default=None,
+        "--skip-failed", type=_parse_bool, default=None,
         help="Sets whether to skip failed downloads or exit on failure.")
     parser.add_argument(
         "--log-level", type=str, default=None, choices=["DEBUG", "INFO", "WARNING", "ERROR"],
