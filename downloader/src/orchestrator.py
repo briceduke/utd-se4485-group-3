@@ -1,4 +1,4 @@
-from .config_parser import parse_config, parse_cli_config
+from .config_parser import parse_config, parse_cli_config, merge_configs
 from .path_guard import ensure_paths
 from .logger import get_logger
 from .extension_repo import download_extensions
@@ -28,15 +28,16 @@ def run(config_path: str | None = None, **kwargs) -> int:
 
     cli_config = parse_cli_config(**kwargs)
 
-    config = {
-        **yaml_config,
-        **cli_config
-    }
+    config = merge_configs(yaml_config, cli_config)
 
-    logger = get_logger(config.get("log_level"))
+    logger = get_logger(config.get("logging")["level"])
 
-    ensure_paths([config.get("output")["directory"],
-                  config.get("logging")["file"]])
+    ensure_paths([
+        config.get("output")["directory"],
+        config.get("logging")["file"]
+    ])
+
+    print(config)
     
     extensions = download_extensions(config.get("extensions"),
                                      config.get("output")["directory"],
