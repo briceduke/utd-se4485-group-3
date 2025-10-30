@@ -60,3 +60,5 @@ coverage.xml
 downloads/
 backup/
 *.zip
+
+server/files/
