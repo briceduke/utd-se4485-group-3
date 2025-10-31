@@ -127,6 +127,10 @@ def build_zip_and_manifest(files: List[str], output_dir: str,
     with manifest_path.open("w", encoding="utf-8") as mf:
         json.dump(manifest, mf, indent=2, ensure_ascii=False)
 
+    # Delete the files after the zip is created
+    for f in files:
+        Path(f).unlink()
+
     # Return paths as strings (convert Path objects back to strings)
     return str(zip_path), str(manifest_path)
 

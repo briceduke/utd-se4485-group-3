@@ -2,9 +2,11 @@
 extensions:
   - name: "ms-python.python"
     version: latest
-  - name: "ms-vscode.vscode-json"
+  - name: "vscode-icons-team.vscode-icons"
     version: latest
   - name: "redhat.vscode-yaml"
+    version: latest
+  - name: "eamodio.gitlens"
     version: latest
 
 # Output configuration

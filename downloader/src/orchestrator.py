@@ -37,8 +37,6 @@ def run(config_path: str | None = None, **kwargs) -> int:
         config.get("logging")["file"]
     ])
 
-    print(config)
-    
     extensions = download_extensions(config.get("extensions"),
                                      config.get("output")["directory"],
                                      config.get("download")["retries"],
