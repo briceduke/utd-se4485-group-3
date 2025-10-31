@@ -43,6 +43,7 @@ def run(config_path: str | None = None, **kwargs) -> int:
 
     archive_path, manifest_path = fetch_archive_and_manifest(
         config.get("source")["archive_url"],
+        config.get("source")["manifest_url"],
         config.get("plan")["temp_dir"],
         config.get("source")["retries"],
     )

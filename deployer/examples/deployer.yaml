@@ -22,7 +22,8 @@ plan:
 source:
   # URLs to fetch the extensions archive and manifests from
   archive_url: "https://example.com/vscode-extensions.zip"
-  manifest_url: "https://example.com/vscode-extensions.json"
+  # URL to fetch the manifest file
+  manifest_url: "https://example.com/vscode-manifest.json"
   # Number of retries
   retries: 3
 
