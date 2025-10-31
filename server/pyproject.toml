@@ -1,0 +1,18 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "everfox-server"
+version = "0.1.0"
+description = "Web server for hosting zip and manifest files"
+requires-python = ">=3.12"
+dependencies = [
+    "flask>=3.0.0",
+]
+
+[project.scripts]
+everfox-server = "main:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["main"]

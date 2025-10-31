@@ -1,4 +1,4 @@
-.PHONY: help install install-downloader install-deployer dev-install run-dl run-dp clean venv
+.PHONY: help install install-downloader install-deployer dev-install run-dl run-dp run-server clean venv
 
 VENV_NAME ?= .venv
 ARGS ?=
@@ -11,6 +11,7 @@ venv:
 install: venv
 	. $(VENV_NAME)/bin/activate && pip install -e ./downloader
 	. $(VENV_NAME)/bin/activate && pip install -e ./deployer
+	. $(VENV_NAME)/bin/activate && pip install -e ./server
 	@echo "Packages installed successfully"
 	@echo "Test with: everfox-downloader --help"
 
@@ -23,10 +24,14 @@ run-dl:
 run-dp:
 	. $(VENV_NAME)/bin/activate && PYTHONPATH=./deployer python -m src.cli $(ARGS)
 
+run-server:
+	. $(VENV_NAME)/bin/activate && cd server && python main.py
+
 clean:
 	rm -rf $(VENV_NAME)
 	rm -rf downloader/*.egg-info
 	rm -rf deployer/*.egg-info
+	rm -rf server/*.egg-info
 	find . -type d -name __pycache__ -exec rm -rf {} +
 	find . -name "*.pyc" -delete
 
@@ -36,6 +41,7 @@ help:
 	@echo "  dev-install          - Install packages + development dependencies"
 	@echo "  run-dl ARGS="..."    - Run downloader directly (no installation needed)"
 	@echo "  run-dp ARGS="..."    - Run deployer directly (no installation needed)"
+	@echo "  run-server           - Run server"
 	@echo "  venv                 - Create virtual environment"
 	@echo "  clean                - Remove virtual environment and build artifacts"
 	@echo ""
