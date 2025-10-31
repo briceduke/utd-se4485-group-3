@@ -30,12 +30,12 @@ def run(config_path: str | None = None, **kwargs) -> int:
 
     config = merge_configs(yaml_config, cli_config)
 
-    logger = get_logger(config.get("logging")["level"])
+    # logger = get_logger(config.get("logging")["level"])
 
-    ensure_paths([
-        config.get("output")["directory"],
-        config.get("logging")["file"]
-    ])
+    # ensure_paths([
+    #     config.get("output")["directory"],
+    #     config.get("logging")["file"]
+    # ])
 
     extensions = download_extensions(config.get("extensions"),
                                      config.get("output")["directory"],

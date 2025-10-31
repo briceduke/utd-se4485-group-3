@@ -21,9 +21,9 @@ plan:
 # Source configuration
 source:
   # URLs to fetch the extensions archive and manifests from
-  archive_url: "https://example.com/vscode-extensions.zip"
+  archive_url: "http://localhost:5000/zip/everfox-extensions-20251031.zip"
   # URL to fetch the manifest file
-  manifest_url: "https://example.com/vscode-manifest.json"
+  manifest_url: "http://localhost:5000/manifest/everfox-extensions-20251031.json"
   # Number of retries
   retries: 3
 

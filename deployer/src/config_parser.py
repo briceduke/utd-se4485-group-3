@@ -79,13 +79,13 @@ def parse_config(path: str | None) -> dict:
     source = data['source']
     if 'archive_url' not in source:
         raise ValueError("Missing 'archive_url' in source")
-    if not validators.url(source['archive_url']):
-        raise ValueError(f"Invalid archive_url: {source['archive_url']}")
+    # if not validators.url(source['archive_url']):
+    #     raise ValueError(f"Invalid archive_url: {source['archive_url']}")
 
     if 'manifest_url' not in source:
         raise ValueError("Missing 'manifest_url' in source")
-    if not validators.url(source['manifest_url']):
-        raise ValueError(f"Invalid manifest_url: {source['manifest_url']}")
+    # if not validators.url(source['manifest_url']):
+    #     raise ValueError(f"Invalid manifest_url: {source['manifest_url']}")
 
     source['retries'] = source.get('retries', 3)
 

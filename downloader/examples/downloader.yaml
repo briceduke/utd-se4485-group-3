@@ -1,18 +1,44 @@
 # List of extensions to download
 extensions:
+  - name: "alefragnani.Bookmarks"
+    version: latest
+  - name: "ms-vscode.cpptools"
+    version: latest
+  - name: "ms-vscode.cpptools-extension-pack"
+    version: latest
+  - name: "ms-vscode.cpptools-themes"
+    version: latest
+  - name: "twxs.cmake"
+    version: latest
+  - name: "ms-vscode.cmake-tools"
+    version: latest
+  - name: "redhat.java"
+    version: latest
+  - name: "vscjava.vscode-java-debug"
+    version: latest
+  - name: "vscjava.vscode-java-pack"
+    version: latest
+  - name: "vscjava.vscode-gradle"
+    version: latest
+  - name: "vscjava.vscode-maven"
+    version: latest
+  - name: "vscjava.vscode-java-dependency"
+    version: latest
+  - name: "vscjava.vscode-java-test"
+    version: latest
   - name: "ms-python.python"
     version: latest
-  - name: "vscode-icons-team.vscode-icons"
+  - name: "ms-python.vscode-pylance"
     version: latest
-  - name: "redhat.vscode-yaml"
+  - name: "ms-python.debugpy"
     version: latest
-  - name: "eamodio.gitlens"
+  - name: "selinuxhelper.selinuxhelper"
     version: latest
 
 # Output configuration
 output:
   # Directory where extensions will be downloaded
-  directory: "./downloads"
+  directory: "./server/files"
   # Name of the output ZIP file
   name_template: "everfox-extensions-{{date}}.zip"
 

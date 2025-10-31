@@ -16,7 +16,7 @@ install: venv
 	@echo "Test with: everfox-downloader --help"
 
 dev-install: install
-	. $(VENV_NAME)/bin/activate && pip install black isort pyyaml validators
+	. $(VENV_NAME)/bin/activate && pip install black isort pyyaml validators requests
 
 run-dl:
 	. $(VENV_NAME)/bin/activate && PYTHONPATH=./downloader python -m src.cli $(ARGS)
