@@ -129,7 +129,8 @@ def build_zip_and_manifest(files: List[str], output_dir: str,
 
     # Delete the files after the zip is created
     for f in files:
-        Path(f).unlink()
+        if Path(f).exists():
+            Path(f).unlink()
 
     # Return paths as strings (convert Path objects back to strings)
     return str(zip_path), str(manifest_path)

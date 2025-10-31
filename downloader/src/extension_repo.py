@@ -16,7 +16,7 @@ def download_extensions(extensions: list[dict], download_dir: str,
         skip_failed: Whether to continue if a download fails
 
     Returns:
-        List of local file paths for successfully downloaded extensions
+        List of local file paths for downloaded extensions (even if they failed to download)
     """
     os.makedirs(download_dir, exist_ok=True)
     logger = logging.getLogger("Downloader")
@@ -55,6 +55,8 @@ def download_extensions(extensions: list[dict], download_dir: str,
                 logger.error(f"Failed to get {name}'s latest version: {response.status_code}")
                 if not skip_failed:
                     raise Exception(f"Failed to get {name}'s latest version: {response.status_code}")
+                file_path = Path(download_dir) / f"{ext_name}-{version}.vsix"
+                downloaded_files.append(str(file_path))
                 continue
             latest_version = response.json()["version"]
 
@@ -70,7 +72,7 @@ def download_extensions(extensions: list[dict], download_dir: str,
                 if response.status_code != 200:
                     raise Exception(f"Bad response: {response.status_code}")
 
-                file_path = Path(download_dir) / f"{ext_name}-{version}.vsix"
+                file_path = Path(download_dir) / f"{name}-{version}.vsix"
 
                 with open(file_path, "wb") as f:
                     for chunk in response.iter_content(chunk_size=8192):
@@ -91,6 +93,7 @@ def download_extensions(extensions: list[dict], download_dir: str,
             logger.error(f"Failed to download {name} after {retries} retries.")
             if not skip_failed:
                 raise RuntimeError(f"Download failed: {name}")
+            downloaded_files.append(str(file_path))
             # skip if allowed
             continue
 
