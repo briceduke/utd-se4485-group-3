@@ -9,6 +9,8 @@ description = "Web server for hosting zip and manifest files"
 requires-python = ">=3.12"
 dependencies = [
     "flask>=3.0.0",
+    "flask-cors>=3.0.10",
+    "python-dotenv>=1.2.1",
 ]
 
 [project.scripts]

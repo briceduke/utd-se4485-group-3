@@ -2,11 +2,15 @@ import os
 from pathlib import Path
 from flask import Flask, send_file, jsonify
 from werkzeug.utils import secure_filename
+from flask_cors import CORS
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-
 FILES_DIR = Path(os.getenv("FILES_DIR", "./files"))
 
+CORS(app, resources={r"/*": {"origins": os.getenv("CORS_ORIGINS", "*")}})
 
 def ensure_files_dir():
     """Ensure the files directory exists."""
