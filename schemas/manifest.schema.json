@@ -1,4 +1,66 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "manifest"
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp when the manifest was generated."
+        },
+        "zip": {
+            "type": "string",
+            "description": "The path to the zip file containing the extensions."
+        },
+        "files": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the file."
+                    },
+                    "path": {
+                        "type": "string",
+                        "description": "The path of the file within the zip."
+                    },
+                    "size": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "The size of the file in bytes."
+                    },
+                    "sha256": {
+                        "type": "string",
+                        "pattern": "^[a-fA-F0-9]{64}$",
+                        "description": "The SHA-256 hash of the file."
+                    },
+                    "mtime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "The modification timestamp of the file."
+                    },
+                    "present": {
+                        "type": "boolean",
+                        "description": "Indicates if the file is present."
+                    }
+                },
+                "required": [
+                    "name",
+                    "path",
+                    "size",
+                    "sha256",
+                    "mtime",
+                    "present"
+                ],
+                "additionalProperties": false
+            },
+            "description": "An array of file objects in the manifest."
+        }
+    },
+    "required": [
+        "generated_at",
+        "zip",
+        "files"
+    ],
+    "additionalProperties": false
 }

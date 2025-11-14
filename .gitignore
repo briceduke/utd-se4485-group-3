@@ -66,3 +66,5 @@ server/files/
 temp
 
 *.env
+
+extensions
