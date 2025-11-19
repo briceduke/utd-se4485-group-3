@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Iterable, Iterator
 
 _CHUNK_SIZE = 131072  # 128 KiB
-_SUPPORTED_MODES = {"NONE", "WARN", "ERROR"}
 
 @dataclass(frozen=True)
 class ManifestEntry:

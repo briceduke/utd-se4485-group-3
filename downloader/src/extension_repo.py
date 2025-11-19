@@ -5,10 +5,10 @@ from pathlib import Path
 from time import sleep
 
 
-def get_vscode_vsix_url(ext_name: str, version: str = "latest") -> str:
+def get_vscode_vsix_url(ext_name: str, version: str = "latest") -> tuple[str, str]:
     """
     Queries Microsoft's VS Code Marketplace for the given extension and returns
-    the direct .vsix download URL.
+    the direct .vsix download URL and the resolved version.
     """
     publisher, name = ext_name.split(".")
     url = "https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery"
@@ -31,11 +31,12 @@ def get_vscode_vsix_url(ext_name: str, version: str = "latest") -> str:
         if version != "latest":
             for v in versions:
                 if v.get("version") == version:
-                    return f"{v['assetUri']}/Microsoft.VisualStudio.Services.VSIXPackage"
+                    return (f"{v['assetUri']}/Microsoft.VisualStudio.Services.VSIXPackage", version)
 
         # Default: use latest available version
-        asset_uri = extension["versions"][0]["assetUri"]
-        return f"{asset_uri}/Microsoft.VisualStudio.Services.VSIXPackage"
+        latest_version = extension["versions"][0]
+        asset_uri = latest_version["assetUri"]
+        return (f"{asset_uri}/Microsoft.VisualStudio.Services.VSIXPackage", latest_version["version"])
 
     except (KeyError, IndexError):
         raise ValueError(f"Extension not found or invalid: {ext_name}")
@@ -85,14 +86,14 @@ def download_extensions(extensions: list[dict], download_dir: str,
 
         logger.info(f"Fetching VSIX URL for {name}@{version}...")
         try:
-            url = get_vscode_vsix_url(name, version)
+            url, resolved_version = get_vscode_vsix_url(name, version)
         except Exception as e:
             logger.error(f"Failed to resolve {name}: {e}")
             if not skip_failed:
                 raise
             continue
 
-        logger.info(f"Downloading {name}@{version}")
+        logger.info(f"Downloading {name}@{resolved_version}")
 
         while retry_count < retries and not success:
             try:
@@ -100,18 +101,7 @@ def download_extensions(extensions: list[dict], download_dir: str,
                 if response.status_code != 200:
                     raise Exception(f"Bad response: {response.status_code}")
 
-                # Resolve filename from version (auto if latest)
-                file_version = version
-                if version == "latest":
-                    # Extract actual version number from metadata if available
-                    try:
-                        metadata = requests.head(url).headers.get("Content-Disposition", "")
-                        if "filename=" in metadata:
-                            file_version = metadata.split("filename=")[-1].split(".vsix")[0].split("-")[-1]
-                    except Exception:
-                        pass
-
-                file_path = Path(download_dir) / f"{ext_name}-{file_version}.vsix"
+                file_path = Path(download_dir) / f"{ext_name}-{resolved_version}.vsix"
 
                 with open(file_path, "wb") as f:
                     for chunk in response.iter_content(chunk_size=8192):
