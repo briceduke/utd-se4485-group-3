@@ -14,6 +14,9 @@ Below is a list of resources for working on this project:
  - Status: Reviewed by sponsor and submitted.
 
 **Detailed Design Documentation - Due 11/07/25 11:59PM**
+ - Status: Reviewed by sponsor and submitted.
+
+**Test Plan - Due 11/21/25 11:59PM**
  - Status: In progress.
 
 ### Google Docs Links
@@ -24,6 +27,7 @@ You must request access to view these documents
 2. [Requirements Documentation](https://docs.google.com/document/d/1K-C-Qxv-ak3iMfZVtWAqiY6MwcaQ7BcablQzacZmCMs/edit?usp=sharing)
 3. [Architecture Documentation](https://docs.google.com/document/d/11jxPOv6BJXbTQbjQYScvk9rQOuxu6_rMCpXJJGDyp3c/edit?usp=sharing)
 4. [Detailed Design Documentation](https://docs.google.com/document/d/18Rr_8qcgyI2ZGt3-YASBVLLZP__4tgzuK9ln_h2fPpA/edit?usp=sharing)
+5. [Test Plan](https://docs.google.com/document/d/1ZmdiLMMOY08bXRYEoAVDArlcHrGschCHNMBaGBAJ6ks/edit?usp=sharing)
 
 ### Configuration Management Guidelines
 
