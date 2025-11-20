@@ -1,5 +1,5 @@
 from .config_parser import parse_config, parse_cli_config, merge_configs
-from .logger import get_logger
+from .logger import get_logger, LogConfig
 from .path_guard import ensure_paths
 from .archive_downloader import fetch_archive_and_manifest
 from .backup_cleanup import apply_replace_mode
@@ -32,14 +32,20 @@ def run(config_path: str | None = None, **kwargs) -> int:
 
     config = merge_configs(yaml_config, cli_config)
 
-    ensure_paths([
+    path_result = ensure_paths(
         config.get("plan")["backup_dir"],
         config.get("plan")["temp_dir"],
         config.get("deployment")["target_dir"],
         config.get("logging")["file"]
-    ])
+    )
 
-    logger = get_logger(config.get("logging")["level"])
+    logger = get_logger(LogConfig(
+        name="deployer",
+        level=config.get("logging")["level"],
+        log_file=config.get("logging")["file"],
+        to_console=config.get("logging").get("to_console", True),
+        to_syslog=config.get("logging").get("to_syslog", False)
+    ))
 
     archive_path, manifest_path = fetch_archive_and_manifest(
         config.get("source")["archive_url"],

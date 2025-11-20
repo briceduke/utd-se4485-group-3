@@ -1,8 +1,8 @@
 import os
-import logging
 import requests
 from pathlib import Path
 from time import sleep
+from logging import Logger
 
 
 def get_vscode_vsix_url(ext_name: str, version: str = "latest") -> tuple[str, str]:
@@ -43,7 +43,7 @@ def get_vscode_vsix_url(ext_name: str, version: str = "latest") -> tuple[str, st
 
 
 def download_extensions(extensions: list[dict], download_dir: str,
-                        retries: int = 3, skip_failed: bool = True) -> list[str]:
+                        retries: int = 3, skip_failed: bool = True, logger: Logger | None = None) -> list[str]:
     """
     Downloads VSCode extensions (.vsix) from Microsoft's official Marketplace.
 
@@ -53,20 +53,20 @@ def download_extensions(extensions: list[dict], download_dir: str,
         download_dir: Directory where downloaded files will be saved
         retries: Number of download retry attempts
         skip_failed: Whether to continue if a download fails
+        logger: Logger instance (if None, logging is disabled)
 
     Returns:
         List of local file paths for downloaded extensions (even if they failed to download)
     """
     os.makedirs(download_dir, exist_ok=True)
-    logger = logging.getLogger("Downloader")
-    logger.setLevel(logging.INFO)
     
-    if not logger.handlers:
-        handler = logging.StreamHandler()
-        handler.setLevel(logging.INFO)
-        formatter = logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s")
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
+    if logger is None:
+        class NullLogger:
+            def debug(self, *args, **kwargs): pass
+            def info(self, *args, **kwargs): pass
+            def warning(self, *args, **kwargs): pass
+            def error(self, *args, **kwargs): pass
+        logger = NullLogger()
 
     downloaded_files = []
 

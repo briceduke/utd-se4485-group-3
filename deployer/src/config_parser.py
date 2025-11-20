@@ -38,7 +38,7 @@ def parse_config(path: str | None) -> dict:
     Raises:
         ValueError: If configuration is invalid or missing required fields
     """
-    default_path = os.path.join(os.getcwd(), 'deployer', 'examples', 'deployer.yaml')
+    default_path = os.path.join(os.getcwd(), 'deployer', 'examples', 'test-deployer.yaml')
     config_path = path or default_path
 
     try:
@@ -106,6 +106,8 @@ def parse_config(path: str | None) -> dict:
     if logging['level'] not in ['DEBUG', 'INFO', 'WARNING', 'ERROR']:
         raise ValueError(f"Invalid log level: {logging['level']}")
     logging['file'] = logging.get('file')
+    logging['to_console'] = logging.get('to_console', True) #default state is console logging
+    logging['to_syslog'] = logging.get('to_syslog', False)
 
     return data
 

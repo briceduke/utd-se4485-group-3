@@ -1,6 +1,6 @@
 from .config_parser import parse_config, parse_cli_config, merge_configs
 from .path_guard import ensure_paths
-from .logger import get_logger
+from .logger import get_logger, LogConfig
 from .extension_repo import download_extensions
 from .packaging import build_zip_and_manifest
 
@@ -30,17 +30,25 @@ def run(config_path: str | None = None, **kwargs) -> int:
 
     config = merge_configs(yaml_config, cli_config)
 
-    # logger = get_logger(config.get("logging")["level"])
+    path_result = ensure_paths(
+        config.get("output")["directory"],
+        config.get("output")["directory"],
+        config.get("logging")["file"]
+    )
 
-    # ensure_paths([
-    #     config.get("output")["directory"],
-    #     config.get("logging")["file"]
-    # ])
+    logger = get_logger(LogConfig(
+        name="downloader",
+        level=config.get("logging")["level"],
+        log_file=config.get("logging")["file"],
+        to_console=config.get("logging").get("to_console", True),
+        to_syslog=config.get("logging").get("to_syslog", False)
+    ))
 
     extensions = download_extensions(config.get("extensions"),
                                      config.get("output")["directory"],
                                      config.get("download")["retries"],
-                                     config.get("download")["skip_failed"])
+                                     config.get("download")["skip_failed"],
+                                     logger)
 
     zip_path, manifest_path = build_zip_and_manifest(extensions,
                                                      config.get("output")["directory"],
