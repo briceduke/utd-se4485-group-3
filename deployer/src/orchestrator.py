@@ -52,6 +52,7 @@ def run(config_path: str | None = None, **kwargs) -> int:
         config.get("source")["manifest_url"],
         config.get("plan")["temp_dir"],
         config.get("source")["retries"],
+        logger
     )
 
     apply_replace_mode(
@@ -61,6 +62,7 @@ def run(config_path: str | None = None, **kwargs) -> int:
         config.get("plan")["include_extensions"],
         config.get("plan")["exclude_extensions"],
         config.get("deployment")["target_dir"],
+        logger
     )
 
     expand_and_verify(
@@ -69,6 +71,7 @@ def run(config_path: str | None = None, **kwargs) -> int:
         config.get("deployment")["target_dir"],
         config.get("deployment")["verify_integrity"],
         config.get("deployment")["dry_run"],
+        logger
     )
 
     return 0

@@ -41,6 +41,8 @@ def index():
             "list": "/",
             "download_zip": "/zip/<filename>",
             "download_manifest": "/manifest/<filename>"
+            # "latest_zip": "/latest/zip",  # TODO: to be implemented
+            # "latest_manifest": "/latest/manifest"  # TODO: to be implemented
         }
     })
 
@@ -62,6 +64,26 @@ def serve_zip(filename):
     )
 
 
+# TODO: Dynamic file fetching - to be implemented later
+# @app.route("/latest/zip")
+# def serve_latest_zip():
+#     """Serve the latest zip file."""
+#     ensure_files_dir()
+#     
+#     zip_files = [f for f in FILES_DIR.iterdir() if f.is_file() and f.suffix.lower() == ".zip"]
+#     if not zip_files:
+#         return jsonify({"error": "No zip files found"}), 404
+#     
+#     latest = max(zip_files, key=lambda p: p.stat().st_mtime)
+#     
+#     return send_file(
+#         latest,
+#         mimetype="application/zip",
+#         as_attachment=False,
+#         download_name=latest.name
+#     )
+
+
 @app.route("/manifest/<filename>")
 def serve_manifest(filename):
     """Serve a manifest file by name."""
@@ -77,6 +99,26 @@ def serve_manifest(filename):
         as_attachment=False,
         download_name=filename
     )
+
+
+# TODO: Dynamic file fetching - to be implemented later
+# @app.route("/latest/manifest")
+# def serve_latest_manifest():
+#     """Serve the latest manifest file."""
+#     ensure_files_dir()
+#     
+#     manifest_files = [f for f in FILES_DIR.iterdir() if f.is_file() and f.suffix.lower() in [".json", ".manifest"]]
+#     if not manifest_files:
+#         return jsonify({"error": "No manifest files found"}), 404
+#     
+#     latest = max(manifest_files, key=lambda p: p.stat().st_mtime)
+#     
+#     return send_file(
+#         latest,
+#         mimetype="application/json",
+#         as_attachment=False,
+#         download_name=latest.name
+#     )
 
 
 if __name__ == "__main__":

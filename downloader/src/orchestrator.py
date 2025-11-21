@@ -52,6 +52,7 @@ def run(config_path: str | None = None, **kwargs) -> int:
 
     zip_path, manifest_path = build_zip_and_manifest(extensions,
                                                      config.get("output")["directory"],
-                                                    config.get("output")["name_template"])
+                                                    config.get("output")["name_template"],
+                                                    logger)
 
     return 0

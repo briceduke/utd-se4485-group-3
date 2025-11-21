@@ -10,10 +10,11 @@ plan:
     - name: "ms-vscode.vscode-json"
       version: latest
 
-# Source configuration - using localhost server
+# Source configuration - using localhost server with hardcoded file paths
+# TODO: Switch to dynamic /latest/ endpoints once implemented
 source:
-  archive_url: "http://localhost:5000/zip/everfox-extensions-20251120.zip"
-  manifest_url: "http://localhost:5000/manifest/everfox-extensions-20251120.json"
+  archive_url: "http://localhost:5000/zip/everfox-extensions-20251121.zip"
+  manifest_url: "http://localhost:5000/manifest/everfox-extensions-20251121.json"
   retries: 3
 
 # Deployment configuration - using test directory
