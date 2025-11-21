@@ -13,6 +13,8 @@ plan:
 # Source configuration - using localhost server with hardcoded file paths
 # TODO: Switch to dynamic /latest/ endpoints once implemented
 source:
+  #archive_url: "http://localhost:5000/latest/zip"
+  #manifest_url: "http://localhost:5000/latest/manifest"
   archive_url: "http://localhost:5000/zip/everfox-extensions-20251121.zip"
   manifest_url: "http://localhost:5000/manifest/everfox-extensions-20251121.json"
   retries: 3
