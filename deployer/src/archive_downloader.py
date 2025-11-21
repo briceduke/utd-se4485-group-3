@@ -1,8 +1,9 @@
 import os
 import time
 import requests
+from logging import Logger
 
-def fetch_archive_and_manifest(archive_url: str, manifest_url: str, temp_dir: str, retries: int = 3) -> tuple[str, str]:
+def fetch_archive_and_manifest(archive_url: str, manifest_url: str, temp_dir: str, retries: int = 3, logger: Logger | None = None) -> tuple[str, str]:
     """
     Fetch the extensions archive (.zip) and its manifest (.json) from the specified source URL.
 
@@ -18,6 +19,14 @@ def fetch_archive_and_manifest(archive_url: str, manifest_url: str, temp_dir: st
     Raises:
         Exception: If download fails after all retries
     """
+    if logger is None:
+        class NullLogger:
+            def debug(self, *args, **kwargs): pass
+            def info(self, *args, **kwargs): pass
+            def warning(self, *args, **kwargs): pass
+            def error(self, *args, **kwargs): pass
+        logger = NullLogger()
+    
     os.makedirs(temp_dir, exist_ok=True)
     archive_path = os.path.join(temp_dir, "extensions.zip")
     manifest_path = os.path.join(temp_dir, "manifest.json")
@@ -25,22 +34,23 @@ def fetch_archive_and_manifest(archive_url: str, manifest_url: str, temp_dir: st
     def _download(url: str, dest: str):
         for attempt in range(1, retries + 1):
             try:
-                print(f"[Downloader] Attempt {attempt}: Fetching {url}")
+                logger.info(f"Attempt {attempt}: Fetching {url}")
                 response = requests.get(url, stream=True, timeout=10)
                 response.raise_for_status()
 
                 with open(dest, "wb") as f:
                     for chunk in response.iter_content(chunk_size=8192):
                         f.write(chunk)
-                print(f"[Downloader] ✅ Successfully downloaded {os.path.basename(dest)}")
+                logger.info(f"Successfully downloaded {os.path.basename(dest)}")
                 return
             except Exception as e:
-                print(f"[Downloader] ⚠ Error fetching {url}: {e}")
+                logger.warning(f"Error fetching {url}: {e}")
                 if attempt < retries:
                     wait_time = 2 ** attempt
-                    print(f"[Downloader] Retrying in {wait_time} seconds...")
+                    logger.debug(f"Retrying in {wait_time} seconds...")
                     time.sleep(wait_time)
                 else:
+                    logger.error(f"Failed to download {url} after {retries} attempts.")
                     raise Exception(f"Failed to download {url} after {retries} attempts.") from e
 
     _download(archive_url, archive_path)

@@ -6,10 +6,11 @@ import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Tuple, List
+from logging import Logger
 
 
 def build_zip_and_manifest(files: List[str], output_dir: str,
-                          name_template: str) -> Tuple[str, str]:
+                          name_template: str, logger: Logger | None = None) -> Tuple[str, str]:
     """Build a ZIP archive and a JSON manifest for a list of files.
 
     Args:
@@ -27,6 +28,13 @@ def build_zip_and_manifest(files: List[str], output_dir: str,
     be written alongside the ZIP file. The manifest contains per-file
     metadata including filename, size (bytes) and sha256.
     """
+    if logger is None:
+        class NullLogger:
+            def debug(self, *args, **kwargs): pass
+            def info(self, *args, **kwargs): pass
+            def warning(self, *args, **kwargs): pass
+            def error(self, *args, **kwargs): pass
+        logger = NullLogger()
 
     # Convert output directory string to Path object for easier path manipulation
     out_dir = Path(output_dir)
@@ -53,6 +61,8 @@ def build_zip_and_manifest(files: List[str], output_dir: str,
     # Construct manifest path using same base name but .json extension
     # zip_path.stem gives filename without extension
     manifest_path = out_dir / (zip_path.stem + ".json")
+
+    logger.info(f"Building archive: {zip_path}")
 
     # Capture current timestamp in ISO 8601 format for manifest metadata
     # Example: "2025-10-25T14:30:45.123456+00:00"
@@ -127,10 +137,14 @@ def build_zip_and_manifest(files: List[str], output_dir: str,
     with manifest_path.open("w", encoding="utf-8") as mf:
         json.dump(manifest, mf, indent=2, ensure_ascii=False)
 
+    logger.info(f"Created manifest: {manifest_path}")
+
     # Delete the files after the zip is created
     for f in files:
         if Path(f).exists():
             Path(f).unlink()
+
+    logger.info(f"Packaged {len(files or [])} extension(s)")
 
     # Return paths as strings (convert Path objects back to strings)
     return str(zip_path), str(manifest_path)

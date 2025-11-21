@@ -5,6 +5,7 @@ import shutil
 import re
 from datetime import datetime
 from pathlib import Path
+from logging import Logger
 
 MANIFEST_FILENAME = "manifest.json"
 _VERSION_TOKEN = re.compile(r"^(latest|v?\d[\w.\-]*)$", re.IGNORECASE)
@@ -12,7 +13,7 @@ _VERSION_TOKEN = re.compile(r"^(latest|v?\d[\w.\-]*)$", re.IGNORECASE)
 
 def apply_replace_mode(mode: str, backup_dir: str, temp_dir: str,
                        include_extensions: list[dict], exclude_extensions: list[dict],
-                       target_dir: str) -> None:
+                       target_dir: str, logger: Logger | None = None) -> None:
     """
     Apply the specified replace mode to handle existing extensions.
 
@@ -29,6 +30,14 @@ def apply_replace_mode(mode: str, backup_dir: str, temp_dir: str,
     - 'REPLACE': Replace existing extensions that are not the same version
     - 'CLEAN': Replace all existing extensions
     """
+    if logger is None:
+        class NullLogger:
+            def debug(self, *args, **kwargs): pass
+            def info(self, *args, **kwargs): pass
+            def warning(self, *args, **kwargs): pass
+            def error(self, *args, **kwargs): pass
+        logger = NullLogger()
+    
     normalized = (mode or "NONE").upper()
     if normalized not in {"NONE", "REPLACE", "CLEAN"}:
         raise ValueError(f"Unsupported replace mode: {mode}")
@@ -45,13 +54,12 @@ def apply_replace_mode(mode: str, backup_dir: str, temp_dir: str,
         raise ValueError("Backup directory cannot be inside the target directory.")
 
     if normalized == "NONE":
-        _say("DEBUG", "Replace mode NONE - skipping backup and cleanup.")
+        logger.debug("Replace mode NONE - skipping backup and cleanup.")
         return
 
     installed = _scan_extensions(target)
     if not installed:
-        _say("INFO", "No extensions found in %s; nothing to %s.",
-             target, normalized.lower())
+        logger.info(f"No extensions found in {target}; nothing to {normalized.lower()}.")
         return
 
     manifest = _load_manifest(temp / MANIFEST_FILENAME)
@@ -59,10 +67,10 @@ def apply_replace_mode(mode: str, backup_dir: str, temp_dir: str,
 
     victims = installed if normalized == "CLEAN" else _changed(installed, desired)
     if not victims:
-        _say("INFO", "All installed extensions already match desired versions.")
+        logger.info("All installed extensions already match desired versions.")
         return
 
-    _backup_and_remove(victims, backup, normalized)
+    _backup_and_remove(victims, backup, normalized, logger)
 
 
 def _scan_extensions(target: Path) -> list[dict]:
@@ -135,8 +143,8 @@ def _changed(installed: list[dict], desired: dict[str, str | None]) -> list[dict
     return victims
 
 
-def _backup_and_remove(victims: list[dict], backup_root: Path, mode: str) -> None:
-    session = _create_session_dir(backup_root, mode)
+def _backup_and_remove(victims: list[dict], backup_root: Path, mode: str, logger: Logger | None = None) -> None:
+    session = _create_session_dir(backup_root, mode, logger)
     for ext in victims:
         src = ext["path"]
         dest = session / src.name
@@ -147,11 +155,13 @@ def _backup_and_remove(victims: list[dict], backup_root: Path, mode: str) -> Non
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dest)
             src.unlink()
-        _say("DEBUG", "Moved %s -> %s", src, dest)
-    _say("INFO", "Backed up and removed %d item(s) in %s mode.", len(victims), mode)
+        if logger:
+            logger.debug(f"Moved {src} -> {dest}")
+    if logger:
+        logger.info(f"Backed up and removed {len(victims)} item(s) in {mode} mode.")
 
 
-def _create_session_dir(base: Path, mode: str) -> Path:
+def _create_session_dir(base: Path, mode: str, logger: Logger | None = None) -> Path:
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     session = base / f"{timestamp}_{mode.lower()}"
     counter = 0
@@ -159,7 +169,8 @@ def _create_session_dir(base: Path, mode: str) -> Path:
         counter += 1
         session = base / f"{timestamp}_{mode.lower()}_{counter}"
     session.mkdir(parents=True, exist_ok=False)
-    _say("INFO", "Created backup directory at %s", session)
+    if logger:
+        logger.info(f"Created backup directory at {session}")
     return session
 
 
@@ -205,7 +216,3 @@ def _is_within(child: Path, parent: Path) -> bool:
         return False
 
 
-def _say(level: str, message: str, *args) -> None:
-    if args:
-        message = message % args
-    print(f"[{level}] {message}")

@@ -75,6 +75,8 @@ def parse_config(path: str | None) -> dict:
     if logging['level'] not in ['DEBUG', 'INFO', 'WARNING', 'ERROR']:
         raise ValueError(f"Invalid log level: {logging['level']}")
     logging['file'] = logging.get('file')
+    logging['to_console'] = logging.get('to_console', True) #default state is console logging
+    logging['to_syslog'] = logging.get('to_syslog', False)
 
     return data
 

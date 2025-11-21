@@ -16,7 +16,8 @@ class LogConfig:
     name: str = "downloader"
     level: str = "INFO"              
     log_file: str | None = None      
-    to_syslog: bool = True           
+    to_syslog: bool = False
+    to_console: bool = True           
 def _fmt() -> logging.Formatter:
     fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s",
                             "%Y-%m-%dT%H:%M:%SZ")
@@ -45,6 +46,12 @@ def get_logger(cfg: LogConfig) -> logging.Logger:
             logger.addHandler(sh)
         except Exception:
             pass  
+
+    if cfg.to_console:
+        ch = logging.StreamHandler()
+        ch.setFormatter(fmt)
+        ch.setLevel(logger.level)
+        logger.addHandler(ch)
 
     logger.propagate = False
     setattr(logger, "_initialized_ok", True)
