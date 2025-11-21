@@ -155,8 +155,10 @@ def _backup_and_remove(victims: list[dict], backup_root: Path, mode: str, logger
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dest)
             src.unlink()
-        _say("DEBUG", "Moved %s -> %s", src, dest, logger=logger)
-    _say("INFO", "Backed up and removed %d item(s) in %s mode.", len(victims), mode, logger=logger)
+        if logger:
+            logger.debug(f"Moved {src} -> {dest}")
+    if logger:
+        logger.info(f"Backed up and removed {len(victims)} item(s) in {mode} mode.")
 
 
 def _create_session_dir(base: Path, mode: str, logger: Logger | None = None) -> Path:
@@ -167,7 +169,8 @@ def _create_session_dir(base: Path, mode: str, logger: Logger | None = None) -> 
         counter += 1
         session = base / f"{timestamp}_{mode.lower()}_{counter}"
     session.mkdir(parents=True, exist_ok=False)
-    _say("INFO", "Created backup directory at %s", session, logger=logger)
+    if logger:
+        logger.info(f"Created backup directory at {session}")
     return session
 
 
@@ -213,16 +216,3 @@ def _is_within(child: Path, parent: Path) -> bool:
         return False
 
 
-def _say(level: str, message: str, *args, logger: Logger | None = None) -> None:
-    if args:
-        message = message % args
-    if logger is None:
-        return
-    if level.upper() == "DEBUG":
-        logger.debug(message)
-    elif level.upper() == "INFO":
-        logger.info(message)
-    elif level.upper() == "WARNING":
-        logger.warning(message)
-    elif level.upper() == "ERROR":
-        logger.error(message)
