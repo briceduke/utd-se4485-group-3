@@ -31,8 +31,8 @@ def run(config_path: str | None = None, **kwargs) -> int:
     config = merge_configs(yaml_config, cli_config)
 
     path_result = ensure_paths(
-        config.get("output")["directory"],
-        config.get("output")["directory"],
+        config.get("output")["directory"],       # cache_dir
+        config.get("output")["directory"],       # output_zip - same as cache_dir; ZIP file is written to this directory
         config.get("logging")["file"]
     )
 

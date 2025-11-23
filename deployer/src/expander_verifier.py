@@ -179,17 +179,3 @@ def _handle_verification_findings(mode: str, findings: Iterable[str], logger: Lo
     if logger:
         logger.warning(message)
 
-
-def _say(level: str, message: str, *args, logger: Logger | None = None) -> None:
-    if args:
-        message = message % args
-    if logger is None:
-        return
-    if level.upper() == "DEBUG":
-        logger.debug(message)
-    elif level.upper() == "INFO":
-        logger.info(message)
-    elif level.upper() == "WARNING":
-        logger.warning(message)
-    elif level.upper() == "ERROR":
-        logger.error(message)
