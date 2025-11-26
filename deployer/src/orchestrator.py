@@ -4,6 +4,11 @@ from .path_guard import ensure_paths
 from .archive_downloader import fetch_archive_and_manifest
 from .backup_cleanup import apply_replace_mode
 from .expander_verifier import expand_and_verify
+from pathlib import Path
+import logging
+from deployer.src.remote_server import preseed_server, validate_commit_tree
+from deployer.src.remote_server import prepare_bundle_root_from_zip
+
 
 def run(config_path: str | None = None, **kwargs) -> int:
     """
@@ -39,7 +44,13 @@ def run(config_path: str | None = None, **kwargs) -> int:
         config.get("logging")["file"]
     ])
 
-    logger = get_logger(config.get("logging")["level"])
+    # Initialize logging
+    log_cfg = config.get("logging", {})
+    logger = get_logger(
+        log_cfg.get("level"),
+        log_cfg.get("file")
+    )
+
 
     archive_path, manifest_path = fetch_archive_and_manifest(
         config.get("source")["archive_url"],
@@ -47,6 +58,26 @@ def run(config_path: str | None = None, **kwargs) -> int:
         config.get("plan")["temp_dir"],
         config.get("source")["retries"],
     )
+    # --- optional: pre seed vs code server for offline remote ssh ---
+    logger.info("DEBUG: reached post-fetch stage; about to check preseed flags")
+    preseed = bool(kwargs.get("preseed_server"))
+    commit = kwargs.get("vscode_commit")
+    if preseed:
+        logger.info("DEBUG: entering preseed block")
+        if not commit: 
+            logger.warning("Preseed requested but no --vscode-commit provided; skipping preseed.")
+        else:
+            temp_dir = Path(config.get("plan")["temp_dir"]) / "preseed_work"
+            try:
+                # Create a tiny bundle root that only contains the server tarball
+                bundle_root = prepare_bundle_root_from_zip(Path(archive_path), commit, temp_dir)
+                target = preseed_server(commit, bundle_root)
+                validate_commit_tree(target)
+                logger.info("Pre-seeded VS Code server at %s", target)
+            except Exception as e:
+                logger.error("Preseed failed for commit %s: %s", commit, e)
+                return 1
+    # --------------------------------------------------------------------
 
     apply_replace_mode(
         config.get("plan")["replace_mode"],
