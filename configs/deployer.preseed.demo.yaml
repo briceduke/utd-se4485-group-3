@@ -1,0 +1,24 @@
+# this is for my local tests I left the original deployer.yaml intact just in case. 
+
+source:
+  archive_url: "file:///var/tmp/deployer-work/extensions.zip"
+  manifest_url: "file:///var/tmp/deployer-work/manifest.json"
+  retries: 0
+
+
+plan:
+  replace_mode: NONE
+  backup_dir: "/var/tmp/deployer-backup"
+  temp_dir: "/var/tmp/deployer-work"
+  include_extensions: []
+  exclude_extensions: []
+
+deployment:
+  target_dir: "/var/tmp/vscode-extensions"
+  verify_integrity: NONE
+  dry_run: true
+
+logging: 
+  level: INFO
+  file: "/var/tmp/deployer.log"
+
