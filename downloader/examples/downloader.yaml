@@ -55,3 +55,5 @@ logging:
   level: INFO
   # Log file path (optional)
   file: "./downloader.log"
+  #to_console: true
+  #to_syslog: true  #correctly writes to syslog in default var\log\syslog

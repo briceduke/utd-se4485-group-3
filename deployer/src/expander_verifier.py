@@ -6,6 +6,7 @@ import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Iterator
+from logging import Logger
 
 _CHUNK_SIZE = 131072  # 128 KiB
 
@@ -50,7 +51,7 @@ class ManifestEntry:
 
 
 def expand_and_verify(archive: str, manifest: str, target_dir: str,
-                      verify_integrity: str, dry_run: bool) -> None:
+                      verify_integrity: str, dry_run: bool, logger: Logger | None = None) -> None:
     """
     Expand the archive and verify extension integrity.
 
@@ -66,6 +67,14 @@ def expand_and_verify(archive: str, manifest: str, target_dir: str,
     - 'NONE': Do not verify integrity
     - 'WARN': Warn if integrity is not correct but continue
     """
+    if logger is None:
+        class NullLogger:
+            def debug(self, *args, **kwargs): pass
+            def info(self, *args, **kwargs): pass
+            def warning(self, *args, **kwargs): pass
+            def error(self, *args, **kwargs): pass
+        logger = NullLogger()
+    
     mode = (verify_integrity or "NONE").upper()
     archive_path = Path(archive).expanduser()
     manifest_path = Path(manifest).expanduser()
@@ -79,7 +88,7 @@ def expand_and_verify(archive: str, manifest: str, target_dir: str,
 
     entries = _read_manifest(manifest_path)
     if not entries:
-        _say("INFO", "Manifest contains no present files; nothing to do.")
+        logger.info("Manifest contains no present files; nothing to do.")
         return
 
     try:
@@ -89,17 +98,17 @@ def expand_and_verify(archive: str, manifest: str, target_dir: str,
             if mode != "NONE":
                 findings = list(_verify_entries(zf, entries))
                 if findings:
-                    _handle_verification_findings(mode, findings)
+                    _handle_verification_findings(mode, findings, logger)
                 else:
-                    _say("INFO", "Integrity check passed for %d file(s).", len(entries))
+                    logger.info(f"Integrity check passed for {len(entries)} file(s).")
 
             if not should_extract:
-                _say("INFO", "Dry run enabled - skipping extraction after verification.")
+                logger.info("Dry run enabled - skipping extraction after verification.")
                 return
 
             target_path.mkdir(parents=True, exist_ok=True)
             zf.extractall(path=target_path, members=[entry.member for entry in entries])
-            _say("INFO", "Extracted %d file(s) into %s.", len(entries), target_path.resolve())
+            logger.info(f"Extracted {len(entries)} file(s) into {target_path.resolve()}.")
 
     except zipfile.BadZipFile as exc:
         raise ValueError(f"Archive at {archive_path} is not a valid ZIP file.") from exc
@@ -161,16 +170,12 @@ def _ensure_safe_member(value: str) -> str:
     return "/".join(parts)
 
 
-def _handle_verification_findings(mode: str, findings: Iterable[str]) -> None:
+def _handle_verification_findings(mode: str, findings: Iterable[str], logger: Logger | None = None) -> None:
     message = "Integrity verification found issues:\n" + "\n".join(
         f" - {issue}" for issue in findings
     )
     if mode == "ERROR":
         raise ValueError(message)
-    _say("WARN", message)
+    if logger:
+        logger.warning(message)
 
-
-def _say(level: str, message: str, *args) -> None:
-    if args:
-        message = message % args
-    print(f"[{level}] {message}")
