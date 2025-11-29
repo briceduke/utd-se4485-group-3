@@ -95,6 +95,18 @@ def main() -> int:
             "    REPLACE - Replace existing extensions that are not the same version.\n"
             "    CLEAN   - Replace all existing extensions; extensions not extracted from the archive will be removed."
         ))
+    parser.add_argument(
+        "--preseed-server",
+        action="store_true",
+        help="Pre-seed the VS Code server on the target (~/.vscode-server/bin/<commit>) from the bundle."
+    )
+    parser.add_argument(
+        "--vscode-commit",
+        type=str,
+        metavar="HASH",
+        help="VS Code client commit hash (from 'code --version'). Required with --preseed-server"
+    )
+
     args = parser.parse_args()
 
     return orchestrator.run(config_path=args.config,
@@ -110,7 +122,10 @@ def main() -> int:
                             retries=args.retries,
                             backup_dir=args.backup_dir,
                             temp_dir=args.temp_dir,
-                            replace_mode=args.replace_mode)
+                            replace_mode=args.replace_mode,
+                            preseed_server=args.preseed_server,
+                            vscode_commit=args.vscode_commit,
+                            )
 
 if __name__ == "__main__":
     raise SystemExit(main())
