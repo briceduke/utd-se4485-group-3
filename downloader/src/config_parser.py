@@ -12,6 +12,9 @@ def parse_config(path: str | None) -> dict:
         Dictionary containing parsed configuration with the following structure:
         {
             'extensions': list[dict],  # [{'name': str, 'version': str}, ...]
+            'vscode_version': {
+                'commit_id': str  # VS Code commit ID for server download
+            },
             'output': {
                 'directory': str,
                 'name_template': str
@@ -42,6 +45,16 @@ def parse_config(path: str | None) -> dict:
     missing = [s for s in required_sections if s not in data]
     if missing:
         raise ValueError(f"Missing sections: {', '.join(missing)}")
+    
+    # Validate vscode_version if present
+    if 'vscode_version' in data:
+        vscode_version = data['vscode_version']
+        if not isinstance(vscode_version, dict):
+            raise ValueError("'vscode_version' must be a dictionary")
+        if 'commit_id' not in vscode_version:
+            raise ValueError("Missing 'commit_id' in vscode_version")
+        if not isinstance(vscode_version['commit_id'], str) or not vscode_version['commit_id']:
+            raise ValueError("'commit_id' must be a non-empty string")
 
     extensions = data['extensions']
     if not isinstance(extensions, list):
@@ -106,6 +119,9 @@ def parse_cli_config(**kwargs) -> dict:
         {
             'extensions': list[dict],  # [{'name': str, 'version': str}, ...]
             'exclude_extensions': list[dict],  # [{'name': str, 'version': str}, ...]
+            'vscode_version': {
+                'commit_id': str  # VS Code commit ID for server download
+            },
             'output': {
                 'directory': str,
                 'name_template': str
@@ -153,6 +169,10 @@ def parse_cli_config(**kwargs) -> dict:
         logging['file'] = lf
     if logging:
         config['logging'] = logging
+
+    # Handle vscode_version
+    if (commit_id := kwargs.get("vscode_commit_id")) is not None:
+        config['vscode_version'] = {'commit_id': commit_id}
 
     return config
 

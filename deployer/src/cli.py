@@ -96,15 +96,10 @@ def main() -> int:
             "    CLEAN   - Replace all existing extensions; extensions not extracted from the archive will be removed."
         ))
     parser.add_argument(
-        "--preseed-server",
-        action="store_true",
-        help="Pre-seed the VS Code server on the target (~/.vscode-server/bin/<commit>) from the bundle."
-    )
-    parser.add_argument(
-        "--vscode-commit",
+        "--server-archive-url",
         type=str,
-        metavar="HASH",
-        help="VS Code client commit hash (from 'code --version'). Required with --preseed-server"
+        default=None,
+        help="URL or path to the VS Code server archive (vscode-server-linux-x64.tar.gz). If provided in YAML or CLI, the server will be automatically pre-seeded using the commit ID from the manifest."
     )
 
     args = parser.parse_args()
@@ -123,8 +118,7 @@ def main() -> int:
                             backup_dir=args.backup_dir,
                             temp_dir=args.temp_dir,
                             replace_mode=args.replace_mode,
-                            preseed_server=args.preseed_server,
-                            vscode_commit=args.vscode_commit,
+                            server_archive_url=args.server_archive_url,
                             )
 
 if __name__ == "__main__":
