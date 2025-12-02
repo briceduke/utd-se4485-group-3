@@ -17,6 +17,9 @@ Below is a list of resources for working on this project:
  - Status: Reviewed by sponsor and submitted.
 
 **Test Plan - Due 11/21/25 11:59PM**
+ - Status: Reviewed by sponsor and submitted.
+
+**Final Report - Due 12/05/25 11:59PM**
  - Status: In progress.
 
 ### Google Docs Links
