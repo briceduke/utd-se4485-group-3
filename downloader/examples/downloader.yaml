@@ -1,3 +1,9 @@
+# VS Code version configuration
+vscode_version:
+  # The specific Commit ID of the VS Code client installed on Windows
+  # Found via Help > About > Commit in VS Code
+  commit_id: "bf9252a2fb45be6893dd8870c0bf37e2e1766d61"
+
 # List of extensions to download
 extensions:
   - name: "alefragnani.Bookmarks"

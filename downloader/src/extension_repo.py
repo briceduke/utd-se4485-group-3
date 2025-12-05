@@ -124,3 +124,62 @@ def download_extensions(extensions: list[dict], download_dir: str,
                 raise RuntimeError(f"Download failed: {name}")
 
     return downloaded_files
+
+
+def download_vscode_server(commit_id: str, output_dir: str, retries: int = 3,
+                          logger: Logger | None = None) -> str | None:
+    """
+    Downloads the VS Code Server binary for a specific commit ID.
+
+    Args:
+        commit_id: The VS Code commit ID
+        output_dir: Directory where the server tarball will be saved
+        retries: Number of download retry attempts
+        logger: Logger instance (if None, logging is disabled)
+
+    Returns:
+        Path to the downloaded server tarball, or None if download failed
+    """
+    os.makedirs(output_dir, exist_ok=True)
+    
+    if logger is None:
+        class NullLogger:
+            def debug(self, *args, **kwargs): pass
+            def info(self, *args, **kwargs): pass
+            def warning(self, *args, **kwargs): pass
+            def error(self, *args, **kwargs): pass
+        logger = NullLogger()
+
+    url = f"https://update.code.visualstudio.com/commit:{commit_id}/server-linux-x64/stable"
+    output_path = Path(output_dir) / f"vscode-server-{commit_id}.tar.gz"
+
+    logger.info(f"Downloading VS Code Server for commit {commit_id}...")
+    logger.debug(f"Server URL: {url}")
+
+    retry_count = 0
+    success = False
+
+    while retry_count < retries and not success:
+        try:
+            response = requests.get(url, stream=True, timeout=60)
+            response.raise_for_status()
+
+            with open(output_path, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
+
+            logger.info(f"✅ Downloaded VS Code Server → {output_path}")
+            success = True
+
+        except Exception as e:
+            retry_count += 1
+            logger.warning(f"Attempt {retry_count}/{retries} failed for VS Code Server: {e}")
+            if retry_count < retries:
+                sleep(2)
+
+    if not success:
+        logger.error(f"❌ Failed to download VS Code Server after {retries} retries.")
+        return None
+
+    return str(output_path)

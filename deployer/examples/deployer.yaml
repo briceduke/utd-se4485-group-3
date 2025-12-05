@@ -1,47 +1,22 @@
-# Plan configuration
 plan:
-  # Replace mode:
-  # NONE (do not replace existing extensions),
-  # REPLACE (replace existing extensions that are not the same version),
-  # CLEAN (replace all existing extensions; extensions not extracted from the archive will be removed)
-  replace_mode: NONE
-  # Backup directory
-  backup_dir: "./backup"
-  # Temporary directory
-  temp_dir: "./temp"
-  # Extensions from the archive to include
-  include_extensions:
-    - name: "ms-python.python"
-      version: latest
-  # Extensions from the archive to exclude
-  exclude_extensions:
-    - name: "ms-vscode.vscode-json"
-      version: latest
+  replace_mode: CLEAN
+  
+  backup_dir: "/tmp/deployer_backup"
+  temp_dir: "/tmp/deployer_work"
 
-# Source configuration
 source:
-  # URLs to fetch the extensions archive and manifests from
-  archive_url: "http://localhost:5000/zip/everfox-extensions-20251031.zip"
-  # URL to fetch the manifest file
-  manifest_url: "http://localhost:5000/manifest/everfox-extensions-20251031.json"
-  # Number of retries
+  archive_url: "http://localhost:5000/zip/latest.zip"
+  manifest_url: "http://localhost:5000/manifest/latest.json"
+  server_archive_url: "http://localhost:5000/server/vscode-server-bf9252a2fb45be6893dd8870c0bf37e2e1766d61.tar.gz"
+  
   retries: 3
 
-# Deployment configuration
 deployment:
-  # Target VSCode extensions directory
-  target_dir: "C:/Users/Username/.vscode/extensions"
-  # Whether to verify extension integrity after extraction
-  # NONE (do not verify)
-  # WARN (warn if integrity check fails)
-  # ERROR (fail if integrity check fails)
+  target_dir: "/home/test/.vscode-server/extensions"
+  
   verify_integrity: ERROR
-  # Whether to perform a dry run
   dry_run: false
 
-# Logging configuration
 logging:
-  # Log level: DEBUG, INFO, WARNING, ERROR
   level: INFO
-  # Log file path (optional)
-  file: "./deployer.log"
+  file: "/tmp/deployer.log"
