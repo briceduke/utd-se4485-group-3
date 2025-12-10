@@ -95,6 +95,13 @@ def main() -> int:
             "    REPLACE - Replace existing extensions that are not the same version.\n"
             "    CLEAN   - Replace all existing extensions; extensions not extracted from the archive will be removed."
         ))
+    parser.add_argument(
+        "--server-archive-url",
+        type=str,
+        default=None,
+        help="URL or path to the VS Code server archive (vscode-server-linux-x64.tar.gz). If provided in YAML or CLI, the server will be automatically pre-seeded using the commit ID from the manifest."
+    )
+
     args = parser.parse_args()
 
     return orchestrator.run(config_path=args.config,
@@ -110,7 +117,9 @@ def main() -> int:
                             retries=args.retries,
                             backup_dir=args.backup_dir,
                             temp_dir=args.temp_dir,
-                            replace_mode=args.replace_mode)
+                            replace_mode=args.replace_mode,
+                            server_archive_url=args.server_archive_url,
+                            )
 
 if __name__ == "__main__":
     raise SystemExit(main())

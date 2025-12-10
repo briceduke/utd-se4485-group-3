@@ -1,7 +1,7 @@
 from .config_parser import parse_config, parse_cli_config, merge_configs
 from .path_guard import ensure_paths
 from .logger import get_logger, LogConfig
-from .extension_repo import download_extensions
+from .extension_repo import download_extensions, download_vscode_server
 from .packaging import build_zip_and_manifest
 
 def run(config_path: str | None = None, **kwargs) -> int:
@@ -50,9 +50,28 @@ def run(config_path: str | None = None, **kwargs) -> int:
                                      config.get("download")["skip_failed"],
                                      logger)
 
-    zip_path, manifest_path = build_zip_and_manifest(extensions,
-                                                     config.get("output")["directory"],
-                                                    config.get("output")["name_template"],
-                                                    logger)
+    # Download VS Code Server if commit_id is provided
+    server_path = None
+    commit_id = None
+    if "vscode_version" in config and "commit_id" in config["vscode_version"]:
+        commit_id = config["vscode_version"]["commit_id"]
+        server_path = download_vscode_server(
+            commit_id,
+            config.get("output")["directory"],
+            config.get("download")["retries"],
+            logger
+        )
+        if server_path is None:
+            logger.warning("VS Code Server download failed, but continuing with extensions")
+
+    zip_path, manifest_path = build_zip_and_manifest(
+        extensions,
+        config.get("output")["directory"],
+        config.get("output")["name_template"],
+        config.get("extensions"),
+        commit_id,
+        server_path,
+        logger
+    )
 
     return 0

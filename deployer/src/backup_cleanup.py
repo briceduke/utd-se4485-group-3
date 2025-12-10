@@ -42,9 +42,9 @@ def apply_replace_mode(mode: str, backup_dir: str, temp_dir: str,
     if normalized not in {"NONE", "REPLACE", "CLEAN"}:
         raise ValueError(f"Unsupported replace mode: {mode}")
 
-    target = Path(target_dir).expanduser()
-    backup = Path(backup_dir).expanduser()
-    temp = Path(temp_dir).expanduser()
+    target = Path(target_dir).expanduser().resolve()
+    backup = Path(backup_dir).expanduser().resolve()
+    temp = Path(temp_dir).expanduser().resolve()
 
     target.mkdir(parents=True, exist_ok=True)
     temp.mkdir(parents=True, exist_ok=True)

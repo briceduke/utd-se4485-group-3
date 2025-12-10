@@ -22,7 +22,8 @@ def parse_config(path: str | None) -> dict:
             'source': {
                 'archive_url': str,
                 'manifest_url': str,
-                'retries': int
+                'retries': int,
+                'server_archive_url': str | None  # Optional, for preseed
             },
             'deployment': {
                 'target_dir': str,
@@ -38,7 +39,7 @@ def parse_config(path: str | None) -> dict:
     Raises:
         ValueError: If configuration is invalid or missing required fields
     """
-    default_path = os.path.join(os.getcwd(), 'deployer', 'examples', 'test-deployer.yaml')
+    default_path = os.path.join(os.getcwd(), 'deployer', 'examples', 'deployer.yaml')
     config_path = path or default_path
 
     try:
@@ -88,6 +89,7 @@ def parse_config(path: str | None) -> dict:
     #     raise ValueError(f"Invalid manifest_url: {source['manifest_url']}")
 
     source['retries'] = source.get('retries', 3)
+    source['server_archive_url'] = source.get('server_archive_url')  # Optional
 
     deployment = data['deployment']
     if 'target_dir' not in deployment:
@@ -145,7 +147,8 @@ def parse_cli_config(**kwargs) -> dict:
             'source': {
                 'archive_url': str,
                 'manifest_url': str,
-                'retries': int
+                'retries': int,
+                'server_archive_url': str | None  # Optional, for preseed
             },
             'deployment': {
                 'target_dir': str,
@@ -181,6 +184,8 @@ def parse_cli_config(**kwargs) -> dict:
         source['manifest_url'] = mu
     if (rt := kwargs.get("retries")) is not None:
         source['retries'] = rt
+    if (sau := kwargs.get("server_archive_url")) is not None:
+        source['server_archive_url'] = sau
     if source:
         config['source'] = source
 

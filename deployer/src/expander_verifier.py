@@ -3,6 +3,8 @@ from __future__ import annotations
 import hashlib
 import json
 import zipfile
+import subprocess
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Iterator
@@ -76,9 +78,9 @@ def expand_and_verify(archive: str, manifest: str, target_dir: str,
         logger = NullLogger()
     
     mode = (verify_integrity or "NONE").upper()
-    archive_path = Path(archive).expanduser()
-    manifest_path = Path(manifest).expanduser()
-    target_path = Path(target_dir).expanduser()
+    archive_path = Path(archive).expanduser().resolve()
+    manifest_path = Path(manifest).expanduser().resolve()
+    target_path = Path(target_dir).expanduser().resolve()
     should_extract = not bool(dry_run)
 
     if not archive_path.is_file():
@@ -178,4 +180,156 @@ def _handle_verification_findings(mode: str, findings: Iterable[str], logger: Lo
         raise ValueError(message)
     if logger:
         logger.warning(message)
+
+
+def install_extensions(manifest: str, target_dir: str, commit_id: str | None = None,
+                       dry_run: bool = False, logger: Logger | None = None) -> None:
+    """
+    Install VSIX extensions using the VS Code server's code CLI.
+    
+    Args:
+        manifest: Path to the manifest file (to get list of VSIX files)
+        target_dir: Directory where VSIX files were extracted
+        commit_id: VS Code server commit ID (to locate the code CLI)
+        dry_run: Whether to perform a dry run (no actual installation)
+        logger: Logger instance
+    """
+    if logger is None:
+        class NullLogger:
+            def debug(self, *args, **kwargs): pass
+            def info(self, *args, **kwargs): pass
+            def warning(self, *args, **kwargs): pass
+            def error(self, *args, **kwargs): pass
+        logger = NullLogger()
+    
+    if dry_run:
+        logger.info("Dry run enabled - skipping extension installation.")
+        return
+    
+    # Find the code CLI
+    code_cli_path = _find_code_cli(commit_id, logger)
+    if not code_cli_path:
+        logger.warning("Could not find VS Code server code CLI; skipping extension installation.")
+        logger.warning("Extensions were extracted but not installed. You may need to install them manually.")
+        return
+    
+    # Read manifest to get list of VSIX files
+    manifest_path = Path(manifest).expanduser().resolve()
+    if not manifest_path.is_file():
+        logger.warning(f"Manifest not found: {manifest_path}; skipping extension installation.")
+        return
+    
+    try:
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            manifest_data = json.load(f)
+    except Exception as e:
+        logger.warning(f"Failed to read manifest: {e}; skipping extension installation.")
+        return
+    
+    files = manifest_data.get("files", [])
+    vsix_files = []
+    for file_entry in files:
+        if file_entry.get("present", True) is False:
+            continue
+        file_path = file_entry.get("path") or file_entry.get("name")
+        if file_path and file_path.endswith(".vsix"):
+            vsix_files.append(file_path)
+    
+    if not vsix_files:
+        logger.info("No VSIX files found in manifest; nothing to install.")
+        return
+    
+    target_path = Path(target_dir).expanduser().resolve()
+    installed_count = 0
+    failed_count = 0
+    
+    for vsix_file in vsix_files:
+        vsix_path = target_path / vsix_file
+        if not vsix_path.exists():
+            logger.warning(f"VSIX file not found: {vsix_path}; skipping.")
+            failed_count += 1
+            continue
+        
+        try:
+            logger.info(f"Installing extension: {vsix_path.name}")
+            result = subprocess.run(
+                [str(code_cli_path), "--install-extension", str(vsix_path)],
+                capture_output=True,
+                text=True,
+                timeout=300  # 5 minute timeout per extension
+            )
+            
+            if result.returncode == 0:
+                logger.info(f"✅ Successfully installed: {vsix_path.name}")
+                installed_count += 1
+                # Optionally remove the VSIX file after successful installation
+                # vsix_path.unlink()
+            else:
+                logger.warning(f"❌ Failed to install {vsix_path.name}: {result.stderr}")
+                failed_count += 1
+        except subprocess.TimeoutExpired:
+            logger.error(f"Timeout installing {vsix_path.name}")
+            failed_count += 1
+        except Exception as e:
+            logger.error(f"Error installing {vsix_path.name}: {e}")
+            failed_count += 1
+    
+    logger.info(f"Extension installation complete: {installed_count} installed, {failed_count} failed")
+
+
+def _find_code_cli(commit_id: str | None = None, logger: Logger | None = None) -> Path | None:
+    """
+    Find the VS Code server's code CLI executable.
+    
+    Args:
+        commit_id: VS Code server commit ID (optional, will try to find any installed server)
+        logger: Logger instance
+    
+    Returns:
+        Path to the code CLI executable, or None if not found
+    """
+    if logger is None:
+        class NullLogger:
+            def debug(self, *args, **kwargs): pass
+            def info(self, *args, **kwargs): pass
+            def warning(self, *args, **kwargs): pass
+            def error(self, *args, **kwargs): pass
+        logger = NullLogger()
+    
+    home = Path.home()
+    vscode_server_bin = home / ".vscode-server" / "bin"
+    
+    if not vscode_server_bin.exists():
+        logger.debug(f"VS Code server bin directory not found: {vscode_server_bin}")
+        return None
+    
+    # Possible locations for the code CLI
+    possible_paths = [
+        "bin/code",           # Standard location
+        "code",                # Root of server directory
+        "bin/code-server",     # Alternative name
+    ]
+    
+    # If commit_id is provided, try that specific commit first
+    if commit_id:
+        server_dir = vscode_server_bin / commit_id
+        if server_dir.exists():
+            for rel_path in possible_paths:
+                code_cli = server_dir / rel_path
+                if code_cli.exists() and os.access(code_cli, os.X_OK):
+                    logger.debug(f"Found code CLI at: {code_cli}")
+                    return code_cli
+    
+    # Otherwise, try to find any installed server
+    for commit_dir in sorted(vscode_server_bin.iterdir(), reverse=True):  # Try newest first
+        if not commit_dir.is_dir():
+            continue
+        for rel_path in possible_paths:
+            code_cli = commit_dir / rel_path
+            if code_cli.exists() and os.access(code_cli, os.X_OK):
+                logger.debug(f"Found code CLI at: {code_cli}")
+                return code_cli
+    
+    logger.debug("Could not find code CLI in any VS Code server installation")
+    return None
 

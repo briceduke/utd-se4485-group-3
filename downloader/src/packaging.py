@@ -10,13 +10,19 @@ from logging import Logger
 
 
 def build_zip_and_manifest(files: List[str], output_dir: str,
-                          name_template: str, logger: Logger | None = None) -> Tuple[str, str]:
+                          name_template: str, extension_config: List[dict] | None = None,
+                          commit_id: str | None = None,
+                          server_path: str | None = None, logger: Logger | None = None) -> Tuple[str, str]:
     """Build a ZIP archive and a JSON manifest for a list of files.
 
     Args:
         files: List of paths to downloaded extension files
         output_dir: Directory where the output files should be saved
         name_template: Template for naming the output files (e.g., 'everfox-extensions-{{date}}.zip')
+        extension_config: List of extension config dicts with 'name' and 'version' (optional)
+        commit_id: VS Code commit ID (optional)
+        server_path: Path to the downloaded VS Code Server tarball (optional)
+        logger: Logger instance (optional)
 
     Returns:
         Tuple of (zip_path, manifest_path) containing paths to created files
@@ -26,7 +32,11 @@ def build_zip_and_manifest(files: List[str], output_dir: str,
     resulting name does not end with ``.zip`` the suffix will be added.
     A manifest JSON with the same base name and a ``.json`` extension will
     be written alongside the ZIP file. The manifest contains per-file
-    metadata including filename, size (bytes) and sha256.
+    metadata including filename, size (bytes) and sha256, plus VS Code
+    Server information if provided.
+    
+    Note: The server tarball is NOT included in the extensions ZIP.
+    It remains as a separate file in the output directory.
     """
     if logger is None:
         class NullLogger:
@@ -124,12 +134,39 @@ def build_zip_and_manifest(files: List[str], output_dir: str,
                 "present": True,                    # Flag indicating file was successfully included
             })
 
+    # Extract extension names for the manifest
+    extension_names = []
+    if extension_config:
+        extension_names = [ext.get("name", "") for ext in extension_config if ext.get("name")]
+    
     # Build complete manifest structure with metadata and file list
     manifest = {
         "generated_at": now_iso,        # Timestamp when manifest was created
         "zip": str(zip_path),            # Full path to the ZIP file
         "files": manifest_entries,       # List of all file metadata entries
     }
+    
+    # Add extension names list if available
+    if extension_names:
+        manifest["extensions"] = extension_names
+    
+    # Add VS Code Server information if provided
+    if commit_id:
+        manifest["vscode_commit_id"] = commit_id
+    
+    if server_path:
+        server_file = Path(server_path)
+        if server_file.exists():
+            # Get server file metadata
+            server_stat = server_file.stat()
+            server_sha256 = hashlib.sha256()
+            with server_file.open("rb") as fh:
+                for chunk in iter(lambda: fh.read(8192), b""):
+                    server_sha256.update(chunk)
+            
+            manifest["server_package"] = server_file.name
+            manifest["server_size"] = server_stat.st_size
+            manifest["server_sha256"] = server_sha256.hexdigest()
 
     # Write manifest to JSON file with pretty formatting
     # indent=2 with 2-space indentation
@@ -139,12 +176,15 @@ def build_zip_and_manifest(files: List[str], output_dir: str,
 
     logger.info(f"Created manifest: {manifest_path}")
 
-    # Delete the files after the zip is created
+    # Delete the extension files after the zip is created
+    # Note: Do NOT delete the server tarball - it stays as a separate artifact
     for f in files:
         if Path(f).exists():
             Path(f).unlink()
 
     logger.info(f"Packaged {len(files or [])} extension(s)")
+    if server_path and Path(server_path).exists():
+        logger.info(f"VS Code Server package: {Path(server_path).name}")
 
     # Return paths as strings (convert Path objects back to strings)
     return str(zip_path), str(manifest_path)
