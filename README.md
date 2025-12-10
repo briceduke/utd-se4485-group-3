@@ -123,6 +123,7 @@ The Deployer utility extracts and installs extensions from a downloaded archive 
 - Automatic backup of existing extensions
 - Include/exclude filters for selective deployment
 - Dry-run mode for testing
+- Logs all operations to syslog
 
 ### File Server
 
@@ -139,7 +140,7 @@ A lightweight Flask-based HTTP server for distributing extension archives in air
 - `GET /zip/<filename>` - Download a specific ZIP archive
 - `GET /manifest/<filename>` - Download a specific manifest file
 
-## Configuration
+## Configuration (Examples)
 
 ### Downloader Configuration
 
@@ -186,8 +187,8 @@ logging:
 | `download.skip_failed` | Continue if a download fails | `true` |
 | `logging.level` | Log level (DEBUG, INFO, WARNING, ERROR) | `INFO` |
 | `logging.file` | Log file path | `./downloader.log` |
-| `logging.to_console` | Log to console | `false` |
-| `logging.to_syslog` | Log to syslog | `true` |
+| `logging.to_console` | Log to console | `true` |
+| `logging.to_syslog` | Log to syslog | `false` |
 
 ### Deployer Configuration
 
