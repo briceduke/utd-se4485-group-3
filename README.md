@@ -244,8 +244,8 @@ logging:
 | `deployment.dry_run` | Test without making changes | `false` |
 | `logging.level` | Log level (DEBUG, INFO, WARNING, ERROR) | `INFO` |
 | `logging.file` | Log file path | `./deployer.log` |
-| `logging.to_console` | Log to console | `false` |
-| `logging.to_syslog` | Log to syslog | `true` |
+| `logging.to_console` | Log to console | `true` |
+| `logging.to_syslog` | Log to syslog | `false` |
 
 ## Usage
 
